@@ -1,6 +1,7 @@
 import Script from "next/script";
 import { useCallback, useEffect, useId, useState } from "react";
 import type ymaps2 from "yandex-maps";
+import Menu from "../components/Menu";
 
 declare global {
   interface window {
@@ -52,7 +53,6 @@ export default function Home() {
         }
       );
       setMap(map);
-      console.log(map);
     });
   }, []);
 
@@ -71,9 +71,8 @@ export default function Home() {
   }, []);
 
   const setCurrentRoute = useCallback(
-    (index: number) => {
-      const route = routes[index];
-      console.log(route);
+    (id: string) => {
+      const route = routes.find((route) => route.id === id);
 
       const segments = route.waypointSegments.map((segment) => {
         return new ymaps.Polyline(
@@ -95,9 +94,8 @@ export default function Home() {
     },
     [map, routes]
   );
-  console.log(setCurrentRoute);
 
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(true);
 
   return (
     <div className="">
@@ -107,7 +105,10 @@ export default function Home() {
           left: isMenuOpen ? 0 : "-300px",
         }}
       >
-        THIS IS THE MENU
+        <Menu
+          routes={routes}
+          onRouteChange={(route) => setCurrentRoute(route.id)}
+        />
       </div>
       <div
         id={mapContainerId}
@@ -170,7 +171,7 @@ function parseRoutes(routesSourceJson: any) {
   });
 }
 
-interface Route {
+export interface Route {
   waypointSegments: [number, number][][];
   type: "магистральный" | "городской" | "пригородный" | "подвозящий";
   name: string;
