@@ -19,10 +19,38 @@ export default function Home() {
     setYmaps(ymaps);
 
     ymaps.ready(() => {
-      const map = new ymaps.Map(mapContainerId, {
-        center: [56.996667, 40.981944],
-        zoom: 13,
-      });
+      const routesButtonSize = "40px";
+
+      const map = new ymaps.Map(
+        mapContainerId,
+        {
+          center: [56.996667, 40.981944],
+          zoom: 13,
+          controls: [
+            new ymaps.control.GeolocationControl({
+              options: {
+                position: {
+                  left: "96px",
+                  top: "10px",
+                },
+              },
+            }),
+            new ymaps.control.SearchControl({
+              options: {
+                position: {
+                  left: "132px",
+                  top: "10px",
+                },
+              },
+            }),
+            new ymaps.control.TypeSelector(),
+            new ymaps.control.ZoomControl(),
+          ],
+        },
+        {
+          autoFitToViewport: "always",
+        }
+      );
       setMap(map);
       console.log(map);
     });
@@ -69,9 +97,36 @@ export default function Home() {
   );
   console.log(setCurrentRoute);
 
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
   return (
     <div className="">
-      <div id={mapContainerId} className="fixed w-full h-full" />
+      <div
+        className="absolute h-full w-[300px] z-10 transition-[left]"
+        style={{
+          left: isMenuOpen ? 0 : "-300px",
+        }}
+      >
+        THIS IS THE MENU
+      </div>
+      <div
+        id={mapContainerId}
+        className="fixed h-full right-0 transition-[width]"
+        style={{
+          width: isMenuOpen ? `calc(100% - 300px)` : "100%",
+        }}
+      >
+        <button
+          className={[
+            "absolute w-20 h-7 left-[10px] top-[10px] z-50",
+            "bg-white flex justify-center items-center",
+            "rounded shadow-[0_1px_2px_1px_rgb(0_0_0_/_15%),_0_2px_5px_-3px_rgb(0_0_0_/_15%)]",
+          ].join(" ")}
+          onClick={() => setIsMenuOpen((old) => !old)}
+        >
+          Меню
+        </button>
+      </div>
       <Script
         src="https://api-maps.yandex.ru/2.1/?apikey=226a673e-7daf-4dff-a934-ae42f5931cb5&lang=ru_RU"
         onLoad={initializeMap}
