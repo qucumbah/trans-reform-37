@@ -1,5 +1,7 @@
+import dynamic from 'next/dynamic';
 import Script from "next/script";
 import { useCallback, useEffect, useId, useState } from "react";
+import { useWindowSize } from "react-use";
 import type ymaps2 from "yandex-maps";
 import Menu from "../components/Menu";
 
@@ -9,7 +11,7 @@ declare global {
   }
 }
 
-export default function Home() {
+const Home = () => {
   const [ymaps, setYmaps] = useState<typeof window.ymaps | null>(null);
   const [map, setMap] = useState<ymaps.Map | null>(null);
 
@@ -20,30 +22,14 @@ export default function Home() {
     setYmaps(ymaps);
 
     ymaps.ready(() => {
-      const routesButtonSize = "40px";
-
       const map = new ymaps.Map(
         mapContainerId,
         {
           center: [56.996667, 40.981944],
           zoom: 13,
           controls: [
-            new ymaps.control.GeolocationControl({
-              options: {
-                position: {
-                  left: "96px",
-                  top: "10px",
-                },
-              },
-            }),
-            new ymaps.control.SearchControl({
-              options: {
-                position: {
-                  left: "132px",
-                  top: "10px",
-                },
-              },
-            }),
+            new ymaps.control.GeolocationControl(),
+            new ymaps.control.SearchControl(),
             new ymaps.control.TypeSelector(),
             new ymaps.control.ZoomControl(),
           ],
@@ -78,7 +64,7 @@ export default function Home() {
         return new ymaps.Polyline(
           segment,
           {
-            balloonContent: "Маршрут",
+            balloonContent: route.name,
           },
           {
             strokeColor: "#ff0000",
@@ -97,29 +83,34 @@ export default function Home() {
 
   const [isMenuOpen, setIsMenuOpen] = useState(true);
 
+  const { width } = useWindowSize();
+  const isMobile = width < 640;
+
   return (
     <div className="">
       <div
-        className="absolute h-full w-[300px] z-10 transition-[left]"
+        className="absolute h-full z-10 transition-[left] bg-white"
         style={{
-          left: isMenuOpen ? 0 : "-300px",
+          width: isMobile ? isMenuOpen ? "100%" : 0 : "300px",
+          left: isMenuOpen ? 0 : "-100%",
         }}
       >
         <Menu
           routes={routes}
           onRouteChange={(route) => setCurrentRoute(route.id)}
+          onClose={() => setIsMenuOpen(false)}
         />
       </div>
       <div
         id={mapContainerId}
         className="fixed h-full right-0 transition-[width]"
         style={{
-          width: isMenuOpen ? `calc(100% - 300px)` : "100%",
+          width: isMobile ? "100%" : isMenuOpen ? `calc(100% - 300px)` : "100%",
         }}
       >
         <button
           className={[
-            "absolute w-20 h-7 left-[10px] top-[10px] z-50",
+            "absolute w-20 h-7 left-[10px] top-[45px] z-50",
             "bg-white flex justify-center items-center",
             "rounded shadow-[0_1px_2px_1px_rgb(0_0_0_/_15%),_0_2px_5px_-3px_rgb(0_0_0_/_15%)]",
           ].join(" ")}
@@ -135,6 +126,10 @@ export default function Home() {
     </div>
   );
 }
+
+export default dynamic(() => Promise.resolve(Home), {
+  ssr: false,
+});
 
 function parseRoutes(routesSourceJson: any) {
   return (routesSourceJson.data.allData as any[]).map((routeSource: any[]) => {
