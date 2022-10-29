@@ -1,5 +1,5 @@
 import { useCallback, useState } from "react";
-import { Route, RouteType } from "../pages";
+import { Route, RouteType } from "../util/routes";
 
 const Menu: React.FC<{
   routes: Route[];
