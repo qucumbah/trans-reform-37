@@ -110,11 +110,12 @@ const Home = () => {
       >
         <button
           className={[
-            "absolute w-20 h-7 left-[10px] top-[45px] z-50",
+            "absolute w-20 h-7 left-ya top-[45px] z-50",
             "bg-white flex justify-center items-center",
-            "rounded shadow-[0_1px_2px_1px_rgb(0_0_0_/_15%),_0_2px_5px_-3px_rgb(0_0_0_/_15%)]",
+            "rounded shadow-yandex transition-opacity outline-none",
+            isMenuOpen ? "opacity-0 pointer-events-none" : "opacity-100"
           ].join(" ")}
-          onClick={() => setIsMenuOpen((old) => !old)}
+          onClick={() => setIsMenuOpen(true)}
         >
           Меню
         </button>
@@ -166,16 +167,21 @@ function parseRoutes(routesSourceJson: any) {
   });
 }
 
+export type RouteType = "магистральный" | "городской" | "пригородный" | "подвозящий";
+export type BusType = "Троллейбус" | "Автобус";
+export type BusClass = "Большой класс" | "Средний класс" | "Малый класс";
+export type BusCapacity = "81 чел." | "68 чел." | "43 чел." | "33 чел." | "21 чел.";
+
 export interface Route {
   waypointSegments: [number, number][][];
-  type: "магистральный" | "городской" | "пригородный" | "подвозящий";
+  type: RouteType;
   name: string;
   id: string;
   route: string;
   bus: {
-    type: "Троллейбус" | "Автобус";
-    class: "Большой класс" | "Средний класс" | "Малый класс";
-    capacity: "81 чел." | "68 чел." | "43 чел." | "33 чел." | "21 чел.";
+    type: BusType;
+    class: BusClass;
+    capacity: BusCapacity;
   };
   interval: string;
   hours: string;
