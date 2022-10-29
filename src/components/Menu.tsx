@@ -37,6 +37,7 @@ const Menu: React.FC<{
           <a
             href="https://github.com/qucumbah/trans-reform-37"
             target="_blank"
+            rel="noreferrer"
             className="relative rounded px-4 h-full shadow-yandex"
           >
             О проекте

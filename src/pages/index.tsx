@@ -36,7 +36,7 @@ const Home = () => {
       );
       setMap(map);
     });
-  }, []);
+  }, [mapContainerId]);
 
   const [routes, setRoutes] = useState<Route[]>([]);
   const [stops, setStops] = useState<Stop[]>([]);
@@ -48,7 +48,12 @@ const Home = () => {
 
   const [currentRouteId, setCurrentRouteId] = useState<string | null>(null);
   useEffect(() => {
-    if (map === null || currentRouteId === null) {
+    if (
+      map === null ||
+      currentRouteId === null ||
+      routes.length === 0 ||
+      stops.length === 0
+    ) {
       return;
     }
 
@@ -90,7 +95,7 @@ const Home = () => {
     for (const stop of routeStops) {
       map.geoObjects.add(stop);
     }
-  }, [map, currentRouteId]);
+  }, [map, currentRouteId, routes, stops]);
 
   const [isMenuOpen, setIsMenuOpen] = useState(true);
 
