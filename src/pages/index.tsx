@@ -1,4 +1,4 @@
-import dynamic from 'next/dynamic';
+import dynamic from "next/dynamic";
 import Script from "next/script";
 import { useCallback, useEffect, useId, useState } from "react";
 import { useWindowSize } from "react-use";
@@ -91,13 +91,19 @@ const Home = () => {
       <div
         className="absolute h-full z-10 transition-[left] bg-white"
         style={{
-          width: isMobile ? isMenuOpen ? "100%" : 0 : "300px",
+          width: isMobile ? (isMenuOpen ? "100%" : 0) : "300px",
           left: isMenuOpen ? 0 : "-100%",
         }}
       >
         <Menu
           routes={routes}
-          onRouteChange={(route) => setCurrentRoute(route.id)}
+          onRouteChange={(route) => {
+            setCurrentRoute(route.id);
+
+            if (isMobile) {
+              setIsMenuOpen(false);
+            }
+          }}
           onClose={() => setIsMenuOpen(false)}
         />
       </div>
@@ -113,7 +119,7 @@ const Home = () => {
             "absolute w-20 h-7 left-ya top-[45px] z-50",
             "bg-white flex justify-center items-center",
             "rounded shadow-yandex transition-opacity outline-none",
-            isMenuOpen ? "opacity-0 pointer-events-none" : "opacity-100"
+            isMenuOpen ? "opacity-0 pointer-events-none" : "opacity-100",
           ].join(" ")}
           onClick={() => setIsMenuOpen(true)}
         >
@@ -126,7 +132,7 @@ const Home = () => {
       />
     </div>
   );
-}
+};
 
 export default dynamic(() => Promise.resolve(Home), {
   ssr: false,
@@ -167,10 +173,19 @@ function parseRoutes(routesSourceJson: any) {
   });
 }
 
-export type RouteType = "магистральный" | "городской" | "пригородный" | "подвозящий";
+export type RouteType =
+  | "магистральный"
+  | "городской"
+  | "пригородный"
+  | "подвозящий";
 export type BusType = "Троллейбус" | "Автобус";
 export type BusClass = "Большой класс" | "Средний класс" | "Малый класс";
-export type BusCapacity = "81 чел." | "68 чел." | "43 чел." | "33 чел." | "21 чел.";
+export type BusCapacity =
+  | "81 чел."
+  | "68 чел."
+  | "43 чел."
+  | "33 чел."
+  | "21 чел.";
 
 export interface Route {
   waypointSegments: [number, number][][];
