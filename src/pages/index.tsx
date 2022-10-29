@@ -69,8 +69,8 @@ const Home = () => {
           return new ymaps.Placemark(
             stop.position,
             {
-              hintContent: stop.name,
-              balloonContent: stop.name,
+              hintContent: `Остановка "${stop.name}"`,
+              balloonContent: `Остановка "${stop.name}".<br>Маршруты: ${stop.otherRoutes}.`,
             },
             {
               iconLayout: "default#image",

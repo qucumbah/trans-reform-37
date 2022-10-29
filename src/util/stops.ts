@@ -8,13 +8,14 @@ export const fetchStops = async () => {
 
 const parseStops = (stopsSourceJson: any) => {
   return (stopsSourceJson.data.allData as any[]).map((stopSource: any[]) => {
-    const [, , , lat, lon, id, name, routeId] = stopSource;
+    const [, , , lat, lon, id, name, routeId, , otherRoutes] = stopSource;
 
     return {
       position: [lon, lat],
       id,
       name,
       routeId,
+      otherRoutes,
     } as Stop;
   });
 };
@@ -24,4 +25,5 @@ export interface Stop {
   id: string;
   name: string;
   routeId: string;
+  otherRoutes: string;
 }
