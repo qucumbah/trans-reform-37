@@ -4,6 +4,7 @@ import { useCallback, useEffect, useId, useState } from "react";
 import { useWindowSize } from "react-use";
 import Menu from "../components/Menu";
 import { Route, fetchRoutes } from "../util/routes";
+import { fetchStops, Stop } from "../util/stops";
 
 const Home = () => {
   const [ymaps, setYmaps] = useState<typeof window.ymaps | null>(null);
@@ -38,31 +39,52 @@ const Home = () => {
   }, []);
 
   const [routes, setRoutes] = useState<Route[]>([]);
+  const [stops, setStops] = useState<Stop[]>([]);
 
   useEffect(() => {
-    fetchRoutes().then((routes) => setRoutes(routes));
+    fetchRoutes().then(setRoutes);
+    fetchStops().then(setStops);
   }, []);
 
   const setCurrentRoute = useCallback(
     (id: string) => {
       const route = routes.find((route) => route.id === id);
 
-      const segments = route.waypointSegments.map((segment) => {
+      const routeSegments = route.waypointSegments.map((segment) => {
         return new ymaps.Polyline(
           segment,
           {
             balloonContent: route.name,
           },
           {
-            strokeColor: "#ff0000",
+            strokeColor: "#234f95",
             strokeWidth: 4,
           }
         );
       });
 
+      const routeStops = stops
+        .filter((stop) => stop.routeId === route.id)
+        .map((stop) => {
+          return new ymaps.Placemark(
+            stop.position,
+            {
+              hintContent: stop.name,
+              balloonContent: stop.name,
+            },
+            {
+              iconLayout: "default#image",
+              iconImageHref: "stop.png",
+            }
+          );
+        });
+
       map.geoObjects.removeAll();
-      for (const segment of segments) {
+      for (const segment of routeSegments) {
         map.geoObjects.add(segment);
+      }
+      for (const stop of routeStops) {
+        map.geoObjects.add(stop);
       }
     },
     [map, routes]
@@ -103,7 +125,7 @@ const Home = () => {
       >
         <button
           className={[
-            "absolute w-20 h-7 left-ya top-[45px] z-50",
+            "absolute px-4 h-yabtn left-ya top-[45px] z-50",
             "bg-white flex justify-center items-center",
             "rounded shadow-yandex transition-opacity outline-none",
             isMenuOpen ? "opacity-0 pointer-events-none" : "opacity-100",
