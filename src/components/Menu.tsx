@@ -7,6 +7,7 @@ const Menu: React.FC<{
   onClose: () => void;
 }> = ({ routes, onRouteChange, onClose }) => {
   const [typeFilter, setTypeFilter] = useState<RouteType | "все">("все");
+  const [nameFilter, setNameFilter] = useState<string>("");
 
   const routesFilter = useCallback(
     (route: Route) => {
@@ -14,9 +15,18 @@ const Menu: React.FC<{
         return false;
       }
 
+      const normalizedRouteName = route.name
+        .toLocaleLowerCase()
+        .replaceAll("m", "м")
+        .replaceAll("a", "а");
+
+      if (!normalizedRouteName.includes(nameFilter.toLocaleLowerCase())) {
+        return false;
+      }
+
       return true;
     },
-    [typeFilter]
+    [typeFilter, nameFilter]
   );
 
   return (
@@ -31,10 +41,16 @@ const Menu: React.FC<{
             Закрыть
           </button>
         </div>
-        <div className="">
+        <div className="flex flex-col gap-ya items-stretch">
+          <input
+            type="text"
+            placeholder="Поиск маршрута"
+            onChange={(event) => setNameFilter(event.target.value)}
+            className="p-2 bg-slate-100"
+          />
           <select
             onChange={(event) => setTypeFilter(event.target.value as any)}
-            className="relative w-full p-2"
+            className="p-2 bg-slate-100"
           >
             <option value="все">Все типы</option>
             <option value="магистральный">Магистральный</option>
