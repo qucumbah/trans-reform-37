@@ -46,49 +46,51 @@ const Home = () => {
     fetchStops().then(setStops);
   }, []);
 
-  const setCurrentRoute = useCallback(
-    (id: string) => {
-      const route = routes.find((route) => route.id === id);
+  const [currentRouteId, setCurrentRouteId] = useState<string | null>(null);
+  useEffect(() => {
+    if (map === null || currentRouteId === null) {
+      return;
+    }
 
-      const routeSegments = route.waypointSegments.map((segment) => {
-        return new ymaps.Polyline(
-          segment,
+    const route = routes.find((route) => route.id === currentRouteId);
+
+    const routeSegments = route.waypointSegments.map((segment) => {
+      return new ymaps.Polyline(
+        segment,
+        {
+          balloonContent: route.name,
+        },
+        {
+          strokeColor: "#234f95",
+          strokeWidth: 4,
+        }
+      );
+    });
+
+    const routeStops = stops
+      .filter((stop) => stop.routeId === route.id)
+      .map((stop) => {
+        return new ymaps.Placemark(
+          stop.position,
           {
-            balloonContent: route.name,
+            hintContent: `Остановка "${stop.name}"`,
+            balloonContent: `Остановка "${stop.name}".<br>Маршруты: ${stop.otherRoutes}.`,
           },
           {
-            strokeColor: "#234f95",
-            strokeWidth: 4,
+            iconLayout: "default#image",
+            iconImageHref: "stop.png",
           }
         );
       });
 
-      const routeStops = stops
-        .filter((stop) => stop.routeId === route.id)
-        .map((stop) => {
-          return new ymaps.Placemark(
-            stop.position,
-            {
-              hintContent: `Остановка "${stop.name}"`,
-              balloonContent: `Остановка "${stop.name}".<br>Маршруты: ${stop.otherRoutes}.`,
-            },
-            {
-              iconLayout: "default#image",
-              iconImageHref: "stop.png",
-            }
-          );
-        });
-
-      map.geoObjects.removeAll();
-      for (const segment of routeSegments) {
-        map.geoObjects.add(segment);
-      }
-      for (const stop of routeStops) {
-        map.geoObjects.add(stop);
-      }
-    },
-    [map, routes]
-  );
+    map.geoObjects.removeAll();
+    for (const segment of routeSegments) {
+      map.geoObjects.add(segment);
+    }
+    for (const stop of routeStops) {
+      map.geoObjects.add(stop);
+    }
+  }, [map, currentRouteId]);
 
   const [isMenuOpen, setIsMenuOpen] = useState(true);
 
@@ -106,8 +108,9 @@ const Home = () => {
       >
         <Menu
           routes={routes}
+          selectedRouteId={currentRouteId}
           onRouteChange={(route) => {
-            setCurrentRoute(route.id);
+            setCurrentRouteId(route.id);
 
             if (isMobile) {
               setIsMenuOpen(false);

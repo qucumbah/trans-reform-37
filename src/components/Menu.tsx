@@ -3,9 +3,10 @@ import { Route, RouteType } from "../util/routes";
 
 const Menu: React.FC<{
   routes: Route[];
+  selectedRouteId: string | null;
   onRouteChange: (route: Route) => void;
   onClose: () => void;
-}> = ({ routes, onRouteChange, onClose }) => {
+}> = ({ routes, selectedRouteId, onRouteChange, onClose }) => {
   const [typeFilter, setTypeFilter] = useState<RouteType | "все">("все");
   const [nameFilter, setNameFilter] = useState<string>("");
 
@@ -33,7 +34,13 @@ const Menu: React.FC<{
     <div className="relative w-full h-full pt-ya pb-4 flex flex-col">
       <div className="relative px-ya flex flex-col gap-ya">
         <div className="relative h-yabtn flex items-center justify-between">
-          <span className="">Меню</span>
+          <a
+            href="https://github.com/qucumbah/trans-reform-37"
+            target="_blank"
+            className="relative rounded px-4 h-full shadow-yandex"
+          >
+            О проекте
+          </a>
           <button
             onClick={onClose}
             className="relative rounded px-4 h-full shadow-yandex"
@@ -65,6 +72,7 @@ const Menu: React.FC<{
         {routes.filter(routesFilter).map((route) => (
           <RouteComponent
             route={route}
+            isHighlighted={route.id === selectedRouteId}
             onSelect={() => onRouteChange(route)}
             key={route.id}
           />
@@ -76,10 +84,17 @@ const Menu: React.FC<{
 
 const RouteComponent: React.FC<{
   route: Route;
+  isHighlighted: boolean;
   onSelect: () => void;
-}> = ({ route, onSelect }) => {
+}> = ({ route, isHighlighted, onSelect }) => {
   return (
-    <button className="p-2 rounded-md bg-slate-100" onClick={onSelect}>
+    <button
+      className={[
+        "p-2 rounded-md",
+        isHighlighted ? "bg-slate-200" : "bg-slate-100",
+      ].join(" ")}
+      onClick={onSelect}
+    >
       <div>Маршрут: {route.name}</div>
       <div>{route.route}</div>
       <div>Тип: {route.type}</div>
