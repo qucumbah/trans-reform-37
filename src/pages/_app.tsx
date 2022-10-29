@@ -30,7 +30,7 @@ const MyApp = ({ Component, pageProps }) => {
           content="Карта маршрутов общественного транспорта города Иваново после транспортной реформы"
         />
         <meta property="og:type" content="website" />
-        <meta property="og:image" content="stop.png" />
+        <meta property="og:image" content="https://trans-reform-37.vercel.app/ogimage.png" />
         <link rel="canonical" href="https://trans-reform-37.vercel.app/" />
         <link rel="icon" type="image/png" href="stop.png" />
         <link
